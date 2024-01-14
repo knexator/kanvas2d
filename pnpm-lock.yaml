@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  twgl.js:
+    specifier: ^5.5.3
+    version: 5.5.3
+
 devDependencies:
   tsup:
     specifier: ^8.0.1
@@ -1079,6 +1084,10 @@ packages:
       - supports-color
       - ts-node
     dev: true
+
+  /twgl.js@5.5.3:
+    resolution: {integrity: sha512-lUrWxXmEURxQphwu4hMkudIThjhbrej3WUKH2qdTifixuO1FxQRLgxJVQ81rTDw9CBoxx4m4iIEOfgCf02Ip1Q==}
+    dev: false
 
   /typescript@5.3.3:
     resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
