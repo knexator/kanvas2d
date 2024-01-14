@@ -8,17 +8,17 @@
   ],
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/kanvas2d.js",
+      "import": "./dist/kanvas2d.mjs",
+      "types": "./dist/kanvas2d.d.ts"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/kanvas2d.js",
+  "module": "./dist/kanvas2d.mjs",
+  "types": "./dist/kanvas2d.d.ts",
   "scripts": {
-    "build": "tsup ./src",
-    "examples": "cd examples && tsup ./src",
+    "build": "tsup",
+    "examples": "cd examples && tsup",
     "docs": "typedoc --out docs src"
   },
   "keywords": [],

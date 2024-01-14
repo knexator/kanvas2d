@@ -3,7 +3,8 @@ import { GenericDrawer } from "./core";
 
 
 function customPixelEffectDrawer(gl: WebGL2RenderingContext, fragment_shader: string, MAX_SPRITES?: number): GenericDrawer<{
-    rotation: number
+    center: [number, number],
+    rotation: number,
 }, {
     resolution: [number, number]
 }> {
