@@ -1,0 +1,29 @@
+{
+  "name": "kanvas2d",
+  "version": "0.0.4",
+  "description": "WebGL for 2d games",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup ./src"
+  },
+  "keywords": [],
+  "author": "knexator",
+  "license": "ISC",
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}
