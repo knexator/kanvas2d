@@ -25,11 +25,11 @@ let my_sprite_drawer = new GenericDrawer<{
 }, {
   time: number,
   texture: WebGLTexture,
-}>({
+}>(gl, {
   a_position: { dimension: 2 },
   a_uv: { dimension: 2 },
   a_color: { dimension: 4 },
-}, gl, `#version 300 es
+}, `#version 300 es
   uniform mat3 u_basis;
 
   in vec2 a_position;

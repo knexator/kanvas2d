@@ -9,6 +9,11 @@ type Attribute = {
 
 interface IVec {toArray: () => number[]};
 
+/**
+ * The base class of the library; everything else is implemented using this class.
+ * @typeParam SpriteData - Per-sprite data; the parameters for the instance's `.add(..)` method.
+ * @typeParam GlobalData - Per-drawcall data; the parameters for the instance's `.end(..)` method.
+ */
 export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData extends Record<string, any>> {
     private attributes: Attribute[];
     private program_info: twgl.ProgramInfo;
@@ -22,9 +27,20 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
 
     // private _scratchpad_matrix: Float32Array;
 
+    /**
+     * Create a new GenericDrawer.
+     * @param gl 
+     * @param vertex_spec stuff, etc
+     * @param vertex_shader 
+     * @param fragment_shader 
+     * @param param4 
+     * @param vertexDataFromSpriteData 
+     * @param getGlobalData 
+     * @param MAX_SPRITES 
+     */
     constructor(
-        vertex_spec: Record<string, {dimension: number}>,
         private readonly gl: WebGL2RenderingContext,
+        vertex_spec: Record<string, {dimension: number}>,
         vertex_shader: string,
         fragment_shader: string, 
         // vertex_spec: Record<keyof VertexData, any>,
