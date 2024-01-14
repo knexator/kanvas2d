@@ -40,6 +40,8 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+      - name: Build Library
+        run: pnpm run build
       - name: Build Examples
         run: pnpm run examples
       - name: Build Docs
