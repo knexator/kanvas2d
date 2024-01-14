@@ -14,6 +14,7 @@ let example_texture_1 = await new Promise<WebGLTexture>((resolve, reject) => {
 let example_texture_2 = await new Promise<WebGLTexture>((resolve, reject) => {
   twgl.createTexture(gl, {
     src: new URL(`../images/statue.png`, import.meta.url).href,
+    minMag: gl.NEAREST,
   }, (err, texture) => (err === null) ? resolve(texture) : reject(err));
 });
 
@@ -95,7 +96,7 @@ let my_sprite_drawer = new GenericDrawer<{
     return {
       u_time: time,
       u_texture: texture,
-      u_basis: m3.projection(canvas.clientWidth, canvas.clientHeight),
+      u_basis: m3.translate(m3.projection(canvas.clientWidth, canvas.clientHeight), 100, 100),
     };
   }, 16);
 

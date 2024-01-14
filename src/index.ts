@@ -4,16 +4,6 @@ import * as m3 from "./m3"
 
 export { GenericDrawer , initGL2, m3 };
 
-/**
- * example function
- * @param x cool number
- * @returns cooler number
- */
-export function hello(x: number): number {
-    console.log(twgl.addExtensionsToContext);
-    return x * 2;
-}
-
 function initGL2(canvas: HTMLCanvasElement): WebGL2RenderingContext | null {
     // Assumption 1: transparent canvas is actually faster
     // Assumption 2: shader outputs are alpha-premultiplied
