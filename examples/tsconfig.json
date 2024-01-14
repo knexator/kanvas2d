@@ -2,10 +2,14 @@
   "include": ["./src"],
   "compilerOptions": {
     "outDir": "./dist",
-    "target": "ES6",
-    "module": "ESNext",
+    "target": "ES2015",
+    "module": "ES2015",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "paths": {
+      "kanvas2d": ["../src/index"],
+      "twgl.js": ["../node_modules/twgl.js/dist/5.x/twgl-full"],
+    }
   }
 }
