@@ -18,13 +18,15 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup ./src",
-    "examples": "cd examples && tsup ./src"
+    "examples": "cd examples && tsup ./src",
+    "docs": "typedoc --out docs src"
   },
   "keywords": [],
   "author": "knexator",
   "license": "ISC",
   "devDependencies": {
     "tsup": "^8.0.1",
+    "typedoc": "^0.25.7",
     "typescript": "^5.3.3"
   },
   "dependencies": {
