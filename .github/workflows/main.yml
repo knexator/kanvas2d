@@ -41,11 +41,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build Library
-        run: pnpm run build
+        run: pnpm run build:lib
       - name: Build Examples
-        run: pnpm run examples
+        run: pnpm run build:examples
       - name: Build Docs
-        run: pnpm run docs
+        run: pnpm run build:docs
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact

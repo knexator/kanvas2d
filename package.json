@@ -17,14 +17,18 @@
   "module": "./dist/kanvas2d.mjs",
   "types": "./dist/kanvas2d.d.ts",
   "scripts": {
-    "build": "tsup",
-    "examples": "cd examples && tsup",
-    "docs": "typedoc --out docs src"
+    "build:lib": "tsup",
+    "build:examples": "cd examples && tsup",
+    "build:docs": "typedoc --out docs src",
+    "server": "http-server -o",
+    "dev": "run-p \"build:* --watch\" server"
   },
   "keywords": [],
   "author": "knexator",
   "license": "ISC",
   "devDependencies": {
+    "http-server": "^14.1.1",
+    "npm-run-all": "^4.1.5",
     "tsup": "^8.0.1",
     "typedoc": "^0.25.7",
     "typescript": "^5.3.3"

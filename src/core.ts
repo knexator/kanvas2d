@@ -7,7 +7,7 @@ type Attribute = {
     cpu_buffer: Float32Array;
 };
 
-interface IVec {toArray: () => number[]};
+type IVec = number[] | {toArray: () => number[]};
 
 /**
  * The base class of the library; everything else is implemented using this class.
@@ -138,7 +138,7 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
         // this._scratchpad_matrix = new Float32Array(9);
     }
 
-    private static setAt(attr: Attribute, vertex_index: number, data: number | number[] | IVec): void {
+    private static setAt(attr: Attribute, vertex_index: number, data: number | IVec): void {
         // let base_index = vertex_index * attr.dimension;
         let data_array: number[];
         if (typeof data === "number") {
@@ -149,7 +149,7 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
             data_array = data.toArray();
         }
         if (data_array.length !== attr.dimension) {
-            throw new Error(`for attr ${attr.name} expected ${attr.dimension} components, found ${data_array.length}`);
+            throw new Error(`attr ${attr.name} expected ${attr.dimension} components, found ${data_array.length}`);
         }
         for (let k = 0; k<data_array.length; k++) {
             attr.cpu_buffer[vertex_index * attr.dimension + k] = data_array[k];
