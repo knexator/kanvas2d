@@ -20,7 +20,8 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
     private buffer_info: twgl.BufferInfo;
     private vao_info: twgl.VertexArrayInfo;
 
-    private n_queued: number;
+    public _n_queued: number;
+    public readonly _MAX_SPRITES: number;
 
     private readonly N_VERTICES_PER_SPRITE: number;
     private readonly N_TRIANGLES_PER_SPRITE: number;
@@ -58,11 +59,12 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
         private vertexDataFromSpriteData: (data: SpriteData) => ({[key in keyof typeof vertex_spec]: number | number[] | IVec})[],
         private getGlobalData: (data: GlobalData) => Record<string, any>,
         // private vertexDataFromSpriteData: (data: SpriteData, x: typeof vertex_spec) => ({[key in (keyof typeof vertex_spec)]: any})[],
-        private readonly MAX_SPRITES: number = 256,
+        MAX_SPRITES: number = 256,
     ) {
         // if (triangles.set() !== [0..N_VERTICES_PER_SPRITE]) throw new Error("stuff");
         if (triangles.length !== N_TRIANGLES_PER_SPRITE) throw new Error(`Expected ${N_TRIANGLES_PER_SPRITE} triangles, got ${triangles.length}`);
 
+        this._MAX_SPRITES = MAX_SPRITES;
         this.N_TRIANGLES_PER_SPRITE = N_TRIANGLES_PER_SPRITE;
         this.N_VERTICES_PER_SPRITE = N_VERTICES_PER_SPRITE;
 
@@ -134,7 +136,7 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
         // });
 
         this.vao_info = twgl.createVertexArrayInfo(gl, this.program_info, this.buffer_info);
-        this.n_queued = 0;
+        this._n_queued = 0;
         // this._scratchpad_matrix = new Float32Array(9);
     }
 
@@ -157,21 +159,21 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
     }
 
     add(sprite_params: SpriteData): void {
-        if (this.n_queued >= this.MAX_SPRITES) {
+        if (this._n_queued >= this._MAX_SPRITES) {
             console.warn("Reached the maximum number of sprites, consider increasing MAX_SPRITES")
             throw new Error("");
             // this.end();
         }
 
         let vertices_data = this.vertexDataFromSpriteData(sprite_params);
-        let base_vertex_index = this.n_queued * this.N_VERTICES_PER_SPRITE; 
+        let base_vertex_index = this._n_queued * this.N_VERTICES_PER_SPRITE; 
         vertices_data.forEach((vertex_data, k) => {
             this.attributes.forEach(attr => {
                 GenericDrawer.setAt(attr, base_vertex_index + k, vertex_data[attr.name]);
             });
             // this.position_cpu.set()
         });
-        this.n_queued += 1;
+        this._n_queued += 1;
 
         // vertex_data
 
@@ -191,12 +193,14 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
     }
 
     end(global_params: GlobalData): void {
+        if (this._n_queued === 0) return;
+
         // console.log("ending, will draw",this.n_queued);
         const gl = this.gl;
         
         this.attributes.forEach(attr => {
             gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer_info.attribs![attr.name].buffer);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, attr.cpu_buffer, 0, this.n_queued * this.N_VERTICES_PER_SPRITE * attr.dimension);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, attr.cpu_buffer, 0, this._n_queued * this.N_VERTICES_PER_SPRITE * attr.dimension);
         });
 
         this.gl.useProgram(this.program_info.program)
@@ -210,9 +214,9 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
         // });
         twgl.setUniformsAndBindTextures(this.program_info, this.getGlobalData(global_params));
 
-        twgl.drawBufferInfo(gl, this.vao_info, this.gl.TRIANGLES, this.n_queued * this.N_TRIANGLES_PER_SPRITE * 3);
+        twgl.drawBufferInfo(gl, this.vao_info, this.gl.TRIANGLES, this._n_queued * this.N_TRIANGLES_PER_SPRITE * 3);
 
-        this.n_queued = 0;
+        this._n_queued = 0;
     }
 }
 

@@ -2,18 +2,24 @@ import { m3 } from ".";
 import { GenericDrawer } from "./core";
 import { IRect, IVec2, Transform, Vec2 } from "./geometry";
 
-// #version 300 es
-// precision highp float;
-// in vec2 v_uv;
-// in vec4 v_color;
-// in vec4 v_extra;
-// uniform sampler2D u_texture;
-// uniform sampler2D u_texture_extra;
-// uniform float u_time;
-
-
 /**
  * Draw sprites using a custom fragment shader.
+ * You get varyings for uv, color, & an extrac vec4 property. 
+ * Default uniforms are the time, a texture, and a texture_extra.
+ * Using all properties, your shader would look like this:
+ * ```glsl
+ * #version 300 es
+ * precision highp float;
+ * vec2 v_uv;
+ * vec4 v_color;
+ * vec4 v_extra;
+ * sampler2D u_texture;
+ * sampler2D u_texture_extra;
+ * float u_time;
+ * 
+ * out vec4 out_color;
+ * void main() {...}
+ * ```
  * @param gl WebGL2 context.
  * @param fragment_shader your fragment shader.
  * @param MAX_SPRITES the max number of sprites you expect to draw.
