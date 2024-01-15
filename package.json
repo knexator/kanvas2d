@@ -21,7 +21,7 @@
     "build:examples": "cd examples && tsup",
     "build:docs": "typedoc --out docs src",
     "server": "http-server -o",
-    "dev": "run-p \"build:* --watch\" server"
+    "dev": "run-p \"build:* -- --watch\""
   },
   "keywords": [],
   "author": "knexator",

@@ -1,34 +1,12 @@
-export class Vec2 {
-    constructor(
-        public readonly x: number = 0.0,
-        public readonly y: number = 0.0,
-    ) { }
+import { Vec2 } from "kanvas2d";
+console.log("vec2: ", Vec2);
 
-    static readonly zero = new Vec2(0, 0);
-    static readonly one = new Vec2(1, 1);
-    static readonly half = new Vec2(0.5, 0.5);
-    static readonly xpos = new Vec2(1, 0);
-    static readonly ypos = new Vec2(0, 1);
-    static readonly xneg = new Vec2(-1, 0);
-    static readonly yneg = new Vec2(0, -1);
-
-    toArray(): [number, number] {
-        return [this.x, this.y];
+export function fromCount<T>(n: number, callback: (index: number) => T): T[] {
+    let result = Array(n);
+    for (let k = 0; k < n; k++) {
+        result[k] = callback(k);
     }
-
-    add(other: Vec2): Vec2 {
-        return new Vec2(
-            this.x + other.x,
-            this.y + other.y,
-        );
-    }
-
-    mul(other: Vec2): Vec2 {
-        return new Vec2(
-            this.x * other.x,
-            this.y * other.y,
-        );
-    }
+    return result;
 }
 
 export class Rectangle {

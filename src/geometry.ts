@@ -62,6 +62,14 @@ export class Vec2 {
             this.x * s + this.y * c
         );
     }
+
+    static fromRadians(radians: number): Vec2 {
+        return new Vec2(Math.cos(radians), Math.sin(radians));
+    }
+
+    static fromTurns(turns: number): Vec2 {
+        return Vec2.fromRadians(turns * Math.PI * 2);
+    }
 }
 
 

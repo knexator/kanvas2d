@@ -1,6 +1,6 @@
-import { GenericDrawer, initGL2, m3 } from "kanvas2d"
+import { GenericDrawer, initGL2, m3, Vec2 } from "kanvas2d"
 import * as twgl from "twgl.js"
-import { Color, Rectangle, Vec2 } from "./utils";
+import { Color, Rectangle } from "./utils";
 
 const canvas = document.querySelector<HTMLCanvasElement>("canvas")!;
 const gl = initGL2(canvas)!;
