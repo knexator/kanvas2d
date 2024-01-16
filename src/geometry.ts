@@ -1,5 +1,3 @@
-import { Rectangle } from "../examples/src/utils";
-
 export class Vec2 {
     constructor(
         public readonly x: number,
@@ -171,10 +169,10 @@ export class Transform {
         return new Transform(Vec2.fromIVec2(delta), Vec2.one, Vec2.zero, 0);
     }
 
-    actOn(rect: Rectangle): Transform {
+    actOn(rect: IRect): Transform {
         if (this.rotation !== 0) throw new Error("unimplemented"); // TODO: implement
         let new_top_left = this.globalFromLocal(rect.top_left);
-        return new Transform(new_top_left, rect.size.mul(this.size), Vec2.zero, 0);
+        return new Transform(new_top_left, this.size.mul(Vec2.fromIVec2(rect.size)), Vec2.zero, 0);
     }
 
     globalFromLocal(uv: IVec2): Vec2 {
