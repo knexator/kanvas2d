@@ -1,6 +1,6 @@
 import { m3 } from ".";
 import { GenericDrawer } from "./core";
-import { IRect, IVec2, Transform, Vec2 } from "./geometry";
+import { IRect, IVec2, IColor, Transform, Vec2, Color } from "./geometry";
 
 /**
  * Draw sprites using a custom fragment shader.
@@ -28,6 +28,7 @@ import { IRect, IVec2, Transform, Vec2 } from "./geometry";
 export function customSpriteDrawer(gl: WebGL2RenderingContext, fragment_shader: string, MAX_SPRITES?: number): GenericDrawer<{
     transform: Transform | IRect,
     uvs: IRect | Transform,
+    color?: IColor,
 }, {
     resolution: IVec2,
     texture?: WebGLTexture,
@@ -59,11 +60,11 @@ export function customSpriteDrawer(gl: WebGL2RenderingContext, fragment_shader: 
         N_TRIANGLES_PER_SPRITE: 2,
         N_VERTICES_PER_SPRITE: 4,
         triangles: [[0, 1, 2], [3, 2, 1]],
-    }, ({ transform, uvs }) => {
+    }, ({ transform, uvs, color }) => {
         return [Vec2.zero, Vec2.xpos, Vec2.ypos, Vec2.one].map(v => ({
             a_position: Transform.fromIRect(transform).globalFromLocal(v),
             a_uv: Transform.fromIRect(uvs).globalFromLocal(v),
-            a_color: [1,1,1,1],
+            a_color: (color === undefined) ? [1,1,1,1] : Color.fromIColor(color),
         }));
     }, ({ resolution, texture, texture_extra, time }) => {
         let resolution_vec = Vec2.fromIVec2(resolution);

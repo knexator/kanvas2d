@@ -87,7 +87,7 @@ let my_sprite_drawer = new GenericDrawer<{
       return {
         a_position: top_left.add(v.mul(size)),
         // uv: uvs.at(v),
-        a_uv: uvs.topLeft.add(v.mul(uvs.size)),
+        a_uv: uvs.top_left.add(v.mul(uvs.size)),
         a_color: color.toArray(),
       }
     });

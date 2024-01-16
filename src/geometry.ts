@@ -1,3 +1,5 @@
+import { Rectangle } from "../examples/src/utils";
+
 export class Vec2 {
     constructor(
         public readonly x: number,
@@ -30,6 +32,27 @@ export class Vec2 {
         return new Vec2(
             this.x + other.x,
             this.y + other.y,
+        );
+    }
+
+    addX(x: number): Vec2 {
+        return new Vec2(
+            this.x + x,
+            this.y,
+        );
+    }
+
+    addY(y: number): Vec2 {
+        return new Vec2(
+            this.x,
+            this.y + y,
+        );
+    }
+
+    addXY(x: number, y: number): Vec2 {
+        return new Vec2(
+            this.x + x,
+            this.y + y,
         );
     }
 
@@ -72,6 +95,47 @@ export class Vec2 {
     }
 }
 
+export class Color {
+    constructor(
+        public readonly r: number,
+        public readonly g: number,
+        public readonly b: number,
+        public readonly a: number = 1.0,
+    ) { }
+
+    static readonly white = new Color(1, 1, 1, 1);
+    static readonly black = new Color(0, 0, 0, 1);
+
+    static fromIColor(value: IColor): Color {
+        if (value instanceof Color) {
+            return value;
+        } else if (Array.isArray(value)) {
+            return new Color(...value);
+        } else if ('r' in value) {
+            return new Color(value.r, value.g, value.b, value.a);
+        } else {
+            return new Color(value.x, value.y, value.z, value.w);
+        }
+    }
+
+    toArray(): [number, number, number, number] {
+        return [this.r, this.g, this.b, this.a];
+    }
+
+    static fromHex(hex_str: string, alpha: number = 1): Color {
+        let hex_number = Number(hex_str.replace('#', '0x'));
+        return Color.fromInt(hex_number, alpha);
+    }
+
+    static fromInt(hex_number: number, alpha: number = 1): Color {
+        return new Color(
+            (hex_number >> 16) / 255,
+            (hex_number >> 8 & 0xff) / 255,
+            (hex_number & 0xff) / 255,
+            alpha
+        );
+    }
+}
 
 export class Transform {
     constructor(
@@ -103,6 +167,16 @@ export class Transform {
     //     // return 
     // }
 
+    static traslation(delta: IVec2): Transform {
+        return new Transform(Vec2.fromIVec2(delta), Vec2.one, Vec2.zero, 0);
+    }
+
+    actOn(rect: Rectangle): Transform {
+        if (this.rotation !== 0) throw new Error("unimplemented"); // TODO: implement
+        let new_top_left = this.globalFromLocal(rect.top_left);
+        return new Transform(new_top_left, rect.size.mul(this.size), Vec2.zero, 0);
+    }
+
     globalFromLocal(uv: IVec2): Vec2 {
         // intuition:
         // if the given position is exactly the pivot, 
@@ -122,4 +196,5 @@ export class Transform {
 }
 
 export type IVec2 = Vec2 | { x: number, y: number } | [number, number];
+export type IColor = Color | { x: number, y: number, z: number, w: number } | { r: number, g: number, b: number, a: number } | [number, number, number, number];
 export type IRect = { top_left: IVec2, size: IVec2 };

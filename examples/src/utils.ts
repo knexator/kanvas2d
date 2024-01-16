@@ -1,5 +1,4 @@
 import { Vec2 } from "kanvas2d";
-console.log("vec2: ", Vec2);
 
 export function fromCount<T>(n: number, callback: (index: number) => T): T[] {
     let result = Array(n);
@@ -11,7 +10,7 @@ export function fromCount<T>(n: number, callback: (index: number) => T): T[] {
 
 export class Rectangle {
     constructor(
-        public readonly topLeft: Vec2,
+        public readonly top_left: Vec2,
         public readonly size: Vec2
     ) { }
 
@@ -27,6 +26,7 @@ export class Color {
     ) { }
 
     static readonly white = new Color(1,1,1,1);
+    static readonly black = new Color(0,0,0,1);
 
     toArray(): [number, number, number, number] {
         return [this.r, this.g, this.b, this.a];

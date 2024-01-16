@@ -8,6 +8,8 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
     "paths": {
       "kanvas2d": ["../src/index"],
       "twgl.js": ["../node_modules/twgl.js/dist/5.x/twgl-full"],
