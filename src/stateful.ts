@@ -11,8 +11,19 @@ export class StatefulDrawer<SpriteData extends Record<string, any>, GlobalData e
     ) {}
 
     set(global_params: Partial<GlobalData>): void {
-        this.endFrame();
-        this.global_state = {...this.global_state, ...global_params};
+        let state_changed = false;
+        for (const key in global_params) {
+            if (Object.prototype.hasOwnProperty.call(global_params, key)) {
+                if (this.global_state !== global_params[key]) {
+                    state_changed = true;
+                    break;
+                }
+            }
+        }
+        if (state_changed) {
+            this.endFrame();
+            this.global_state = {...this.global_state, ...global_params};
+        }
     }
 
     add(sprite_params: SpriteData): void {

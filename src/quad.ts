@@ -27,7 +27,7 @@ import { IRect, IVec2, IColor, Transform, Vec2, Color } from "./geometry";
  */
 export function customSpriteDrawer(gl: WebGL2RenderingContext, fragment_shader: string, MAX_SPRITES?: number): GenericDrawer<{
     transform: Transform | IRect,
-    uvs: IRect | Transform,
+    uvs?: IRect | Transform,
     color?: IColor,
     extra?: IColor,
 }, {
@@ -65,7 +65,7 @@ export function customSpriteDrawer(gl: WebGL2RenderingContext, fragment_shader: 
     }, ({ transform, uvs, color, extra }) => {
         return [Vec2.zero, Vec2.xpos, Vec2.ypos, Vec2.one].map(v => ({
             a_position: Transform.fromIRect(transform).globalFromLocal(v),
-            a_uv: Transform.fromIRect(uvs).globalFromLocal(v),
+            a_uv: (uvs === undefined) ? v : Transform.fromIRect(uvs).globalFromLocal(v),
             a_color: (color === undefined) ? [1,1,1,1] : Color.fromIColor(color),
             a_extra: (extra === undefined) ? [0,0,0,0] : Color.fromIColor(extra),
         }));

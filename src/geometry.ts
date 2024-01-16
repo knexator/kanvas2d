@@ -26,6 +26,10 @@ export class Vec2 {
         }
     }
 
+    static both(value: number): Vec2 {
+        return new Vec2(value, value);
+    }
+
     add(other: Vec2): Vec2 {
         return new Vec2(
             this.x + other.x,
