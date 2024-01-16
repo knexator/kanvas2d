@@ -23,7 +23,7 @@ export type Font = {
     // how many pixels between the absolute top of the line to the base of the characters, assuming a font size of 1
     base: number,
     atlas: WebGLTexture,
-    // The signed distance's range
+    // How many screen pixels are between the texture's 0 & 1 values, assuming a font size of 1
     distance_range: number,
 }
 
@@ -70,18 +70,20 @@ export function createFont(mainfont_data: any, atlas_image: WebGLTexture, defaul
         line_height: mainfont_data.common.lineHeight / original_size,
         base: mainfont_data.common.base / original_size,
         atlas: atlas_image,
-        distance_range: mainfont_data.distanceField.distanceRange,
+        distance_range: mainfont_data.distanceField.distanceRange / original_size,
     };
 }
 
-export function textLine(font: Font, text: string, font_size: number): { quad: Rectangle, uvs: Rectangle }[] {
-    let default_char_data = font.char_data.get("?")!;
+export function textLine(font: Font, text: string, font_size: number): { quad: Rectangle, uvs: Rectangle, scaling_factor: number }[] {
+    const default_char_data = font.char_data.get("?")!;
+    const scaling_factor = font.distance_range * font_size;
     let result: {
         quad: Rectangle,
         uvs: Rectangle,
+        scaling_factor: number,
     }[] = [];
 
-    // Top left
+    console.log(scaling_factor);
 
     let cur_pos = new Vec2(0, 0);
     let prev_char: string | null = null;
@@ -105,7 +107,8 @@ export function textLine(font: Font, text: string, font_size: number): { quad: R
                     cur_pos.add(char_data.offset.scale(font_size)).addX(kerning * font_size),
                     char_data.screen_size.scale(font_size)
                 ),
-                uvs: char_data.uvs
+                uvs: char_data.uvs,
+                scaling_factor: scaling_factor,
             });
         }
         cur_pos = cur_pos.addX(char_data.advance * font_size);

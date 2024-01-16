@@ -29,6 +29,7 @@ export function customSpriteDrawer(gl: WebGL2RenderingContext, fragment_shader: 
     transform: Transform | IRect,
     uvs: IRect | Transform,
     color?: IColor,
+    extra?: IColor,
 }, {
     resolution: IVec2,
     texture?: WebGLTexture,
@@ -39,6 +40,7 @@ export function customSpriteDrawer(gl: WebGL2RenderingContext, fragment_shader: 
         a_position: { dimension: 2 },
         a_uv: { dimension: 2 },
         a_color: { dimension: 4 },
+        a_extra: { dimension: 4 },
     }, `#version 300 es
     uniform mat3 u_basis;
     
@@ -60,11 +62,12 @@ export function customSpriteDrawer(gl: WebGL2RenderingContext, fragment_shader: 
         N_TRIANGLES_PER_SPRITE: 2,
         N_VERTICES_PER_SPRITE: 4,
         triangles: [[0, 1, 2], [3, 2, 1]],
-    }, ({ transform, uvs, color }) => {
+    }, ({ transform, uvs, color, extra }) => {
         return [Vec2.zero, Vec2.xpos, Vec2.ypos, Vec2.one].map(v => ({
             a_position: Transform.fromIRect(transform).globalFromLocal(v),
             a_uv: Transform.fromIRect(uvs).globalFromLocal(v),
             a_color: (color === undefined) ? [1,1,1,1] : Color.fromIColor(color),
+            a_extra: (extra === undefined) ? [0,0,0,0] : Color.fromIColor(extra),
         }));
     }, ({ resolution, texture, texture_extra, time }) => {
         let resolution_vec = Vec2.fromIVec2(resolution);

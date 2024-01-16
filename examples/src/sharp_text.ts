@@ -19,6 +19,7 @@ const textDrawer = customSpriteDrawer(gl, `#version 300 es
   precision highp float;
   in vec2 v_uv;
   in vec4 v_color;
+  in vec4 v_extra; // x component used to store the scale
   uniform sampler2D u_texture;
 
   out vec4 out_color;
@@ -27,23 +28,13 @@ const textDrawer = customSpriteDrawer(gl, `#version 300 es
     return max(min(v.x, v.y), min(max(v.x, v.y), v.z));
   }
 
-  // TODO: replace this by a constant, as in https://github.com/Chlumsky/msdfgen's README
-  float screenPxRange() {
-    float pxRange = ${font.distance_range.toFixed(10)};
-    vec2 unitRange = vec2(pxRange)/vec2(textureSize(u_texture, 0));
-    vec2 screenTexSize = vec2(1.0)/fwidth(v_uv);
-    return max(0.5*dot(unitRange, screenTexSize), 1.0);
-  }
-
+  // for an explanation of antialiasing, see https://github.com/Chlumsky/msdfgen's README
   void main() {
     vec3 raw = texture(u_texture, v_uv).rgb;
     float signed_distance = median(raw) - 0.5;
-    // that .7 is a total hack, TODO: revise
-    // float alpha = clamp(.7 + signed_distance / fwidth(signed_distance), 0.0, 1.0);
-    float alpha = smoothstep(-.1, .1, signed_distance);
-    out_color = vec4(vec3(0.), v_color.a * alpha);
-    // out_color = vec4(v_color.rgb, v_color.a * alpha);
-    out_color.rgb *= out_color.a;
+    float screenPxDistance = v_extra.x * signed_distance;
+    float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+    out_color = v_color * alpha;
   }`);
 
 let last_timestamp = 0;
@@ -60,12 +51,13 @@ function every_frame(cur_timestamp: number) {
   }
 
   let transform = Transform.traslation(new Vec2(100, 100));
-  textLine(font, "Hello World!", 54).forEach(({ quad, uvs }) => {
+  textLine(font, "Hello World!", 54).forEach(({ quad, uvs, scaling_factor }) => {
     textDrawer.add({
       transform: transform.actOn(quad),
       // transform: new Transform(new Vec2(50, 50), new Vec2(100, 100), Vec2.zero, 0),
       uvs: uvs,
       color: Color.black,
+      extra: [scaling_factor * transform.size.x, 0, 0, 0],
     });
   });
   textDrawer.end({
