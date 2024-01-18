@@ -1,4 +1,6 @@
 import { GenericDrawer } from "./core";
+import isEqual from "lodash.isequal"
+// import isEqual = require('lodash.isequal');
 
 /**
  * Wraps around GenericDrawer, changing the API to be stateful
@@ -8,21 +10,23 @@ export class StatefulDrawer<SpriteData extends Record<string, any>, GlobalData e
     constructor(
         private readonly drawer: GenericDrawer<SpriteData, GlobalData>,
         private global_state: GlobalData,
+        private compare_states?: (a: GlobalData, b: GlobalData) => boolean,
     ) {}
 
     set(global_params: Partial<GlobalData>): void {
+        let new_state = {...this.global_state, ...global_params};
+
         let state_changed = false;
-        for (const key in global_params) {
-            if (Object.prototype.hasOwnProperty.call(global_params, key)) {
-                if (this.global_state !== global_params[key]) {
-                    state_changed = true;
-                    break;
-                }
-            }
+        if (this.compare_states === undefined) {
+            // no compare function provided, use lodash' isEqual
+            state_changed = !isEqual(this.global_state, new_state);
+        } else {
+            state_changed = this.compare_states(this.global_state, new_state);
         }
+
         if (state_changed) {
             this.endFrame();
-            this.global_state = {...this.global_state, ...global_params};
+            this.global_state = new_state;
         }
     }
 

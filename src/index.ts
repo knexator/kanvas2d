@@ -4,8 +4,9 @@ import { IRect, IVec2, Vec2, Transform } from "./geometry";
 import * as m3 from "./m3"
 import { customSpriteDrawer } from "./quad";
 import { StatefulDrawer } from "./stateful";
+import { CircleDrawer } from "./builtin";
 
-export { GenericDrawer, StatefulDrawer, initGL2, m3, IRect, IVec2, Vec2, Transform, customSpriteDrawer };
+export { GenericDrawer, StatefulDrawer, initGL2, m3, IRect, IVec2, Vec2, Transform, customSpriteDrawer, CircleDrawer };
 
 function initGL2(canvas: HTMLCanvasElement): WebGL2RenderingContext | null {
     // Assumption 1: transparent canvas is actually faster
