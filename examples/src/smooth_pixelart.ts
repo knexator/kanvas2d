@@ -55,16 +55,6 @@ const aaPixelArt = customSpriteDrawer(gl, `#version 300 es
   out vec4 out_color;
   void main() {
     out_color = texture2DAA(u_texture, v_uv);
-
-    // vec2 pix = v_uv;
-
-    // // apply aa algorithm
-    // pix = floor(pix) + min(fract(pix) / fwidth(pix), 1.0) - 0.5;
-
-    // // for slightly sharper aa, change the above line to
-    // // pix = floor(pix) + smoothstep(0.0, 1.0, fract(pix) / fwidth(pix)) - 0.5;
-
-    // out_color = texture(u_texture, pix);
   }`);
 
 let last_timestamp = 0;
