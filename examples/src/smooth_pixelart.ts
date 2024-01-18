@@ -1,4 +1,4 @@
-import { initGL2, customSpriteDrawer, Transform, Vec2 } from "kanvas2d"
+import { initGL2, CustomSpriteDrawer, Transform, Vec2 } from "kanvas2d"
 import * as twgl from "twgl.js"
 import { Color, Rectangle } from "./utils";
 
@@ -21,7 +21,7 @@ let example_texture_linear = await new Promise<WebGLTexture>((resolve, reject) =
   }, (err, texture) => (err === null) ? resolve(texture) : reject(err));
 });
 
-const standardPixelArt = customSpriteDrawer(gl, `#version 300 es
+const standardPixelArt = new CustomSpriteDrawer(gl, `#version 300 es
   precision highp float;
   in vec2 v_uv;
 
@@ -36,7 +36,7 @@ const standardPixelArt = customSpriteDrawer(gl, `#version 300 es
   }`);
 
 
-const aaPixelArt = customSpriteDrawer(gl, `#version 300 es
+const aaPixelArt = new CustomSpriteDrawer(gl, `#version 300 es
   precision highp float;
   in vec2 v_uv;
 
@@ -73,12 +73,12 @@ function every_frame(cur_timestamp: number) {
   standardPixelArt.add({
     transform: new Transform(new Vec2(150, 150), Vec2.both(100 + 20 * Math.sin(cur_timestamp * .001)), Vec2.half, cur_timestamp * .001),
   });
-  standardPixelArt.end({resolution: [canvas.clientWidth, canvas.clientHeight], texture: example_texture_nearest, time: cur_timestamp * .001});
+  standardPixelArt.end({ resolution: [canvas.clientWidth, canvas.clientHeight], texture: example_texture_nearest, time: cur_timestamp * .001 });
 
   aaPixelArt.add({
     transform: new Transform(new Vec2(350, 150), Vec2.both(100 + 20 * Math.sin(cur_timestamp * .001)), Vec2.half, cur_timestamp * .001),
   });
-  aaPixelArt.end({resolution: [canvas.clientWidth, canvas.clientHeight], texture: example_texture_linear, time: cur_timestamp * .001});
+  aaPixelArt.end({ resolution: [canvas.clientWidth, canvas.clientHeight], texture: example_texture_linear, time: cur_timestamp * .001 });
 
   requestAnimationFrame(every_frame);
 }

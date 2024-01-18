@@ -1,4 +1,4 @@
-import { initGL2, customSpriteDrawer, Transform, Vec2 } from "kanvas2d"
+import { initGL2, CustomSpriteDrawer, Transform, Vec2 } from "kanvas2d"
 import * as twgl from "twgl.js"
 import { Color } from "./utils";
 import font_metadata from "../fonts/consolas.json"
@@ -15,7 +15,7 @@ let font_atlas = await new Promise<WebGLTexture>((resolve, reject) => {
 
 let font = createFont(font_metadata, font_atlas, '?');
 
-const textDrawer = customSpriteDrawer(gl, `#version 300 es
+const textDrawer = new CustomSpriteDrawer(gl, `#version 300 es
   precision highp float;
   in vec2 v_uv;
   in vec4 v_color;
