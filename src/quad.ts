@@ -26,59 +26,86 @@ import { IRect, IVec2, IColor, Transform, Vec2, Color } from "./geometry";
  * @param MAX_SPRITES the max number of sprites you expect to draw.
  * @returns An object for drawing sprites with your custom fragment shader.
  */
-export class CustomSpriteDrawer extends GenericDrawer<{
+
+export type DefaultSpriteData = {
     transform: Transform | IRect,
     uvs?: IRect | Transform,
     color?: IColor,
-    extra?: IColor,
-}, {
+};
+
+export type DefaultGlobalData = {
     resolution: IVec2,
-    texture?: WebGLTexture,
-    texture_extra?: WebGLTexture,
-    time?: number,
-}> {
-    constructor(gl: WebGL2RenderingContext, fragment_shader: string, MAX_SPRITES?: number) {
-        super(gl, {
+}
+
+export class CustomSpriteDrawer<
+SpriteData extends Record<string, any>,
+GlobalData extends Record<string, any>,
+> extends GenericDrawer<SpriteData, GlobalData> {
+    constructor(
+        gl: WebGL2RenderingContext,
+        fragment_shader: string,
+        my_global?: (data: GlobalData) => Record<string, any> & {
+            resolution: IVec2,
+        },
+        extra_sprite_data: Record<string, { dimension: number }> = {},
+        my_add?: (data: SpriteData) => {
+            transform: Transform | IRect,
+            uvs?: IRect | Transform,
+            color?: IColor,
+            custom_data: { [key in keyof typeof extra_sprite_data]: number | number[] | IVec2 },
+        },
+    ) {
+        let default_attrs = {
             a_position: { dimension: 2 },
             a_uv: { dimension: 2 },
             a_color: { dimension: 4 },
-            a_extra: { dimension: 4 },
-        }, `#version 300 es
+        };
+        let vertex_shader = `#version 300 es
         uniform mat3 u_basis;
         
         in vec2 a_position;
         in vec2 a_uv;
         in vec4 a_color;
-        in vec4 a_extra;
+
+        ${Object.entries(extra_sprite_data).map(([name, data]) => {
+            return `in ${['float', 'vec2', 'vec3', 'vec4'][data.dimension - 1]} ${name};`
+        }).join('\n')}
 
         out vec2 v_uv;
         out vec4 v_color;
-        out vec4 v_extra;
+        ${Object.entries(extra_sprite_data).map(([name, data]) => {
+            return `out ${['float', 'vec2', 'vec3', 'vec4'][data.dimension - 1]} v_${name};`
+        }).join('\n')}
 
         void main() {
             gl_Position = vec4((u_basis * vec3(a_position, 1)).xy, 0, 1);
             v_uv = a_uv;
             v_color = a_color;
-            v_extra = a_extra;
-        }`, fragment_shader, {
+            ${Object.entries(extra_sprite_data).map(([name, data]) => {
+            return `v_${name} = ${name};`
+        }).join('\n')}
+        }`;
+        console.log("vert:", vertex_shader);
+        super(gl, { ...extra_sprite_data, ...default_attrs },
+            vertex_shader, fragment_shader, {
             N_TRIANGLES_PER_SPRITE: 2,
             N_VERTICES_PER_SPRITE: 4,
             triangles: [[0, 1, 2], [3, 2, 1]],
-        }, ({ transform, uvs, color, extra }) => {
+        }, (sprite_data) => {
+            const { transform, uvs, color, custom_data } = my_add === undefined ? sprite_data : my_add(sprite_data);
             return [Vec2.zero, Vec2.xpos, Vec2.ypos, Vec2.one].map(v => ({
                 a_position: Transform.fromIRect(transform).globalFromLocal(v),
                 a_uv: (uvs === undefined) ? v : Transform.fromIRect(uvs).globalFromLocal(v),
                 a_color: (color === undefined) ? [1, 1, 1, 1] : Color.fromIColor(color),
-                a_extra: (extra === undefined) ? [0, 0, 0, 0] : Color.fromIColor(extra),
+                ...custom_data
             }));
-        }, ({ resolution, texture, texture_extra, time }) => {
-            let resolution_vec = Vec2.fromIVec2(resolution);
+        }, (global_data) => {
+            const { resolution, ...extra_data } = my_global === undefined ? global_data : my_global(global_data);
+            const resolution_vec = Vec2.fromIVec2(resolution);
             return {
                 u_basis: m3.projection(resolution_vec.x, resolution_vec.y),
-                u_texture: texture,
-                u_texture_extra: texture_extra,
-                u_time: time,
-            };
-        }, MAX_SPRITES);
+                ...extra_data
+            }
+        });
     }
 }

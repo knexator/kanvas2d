@@ -1,4 +1,4 @@
-import { initGL2, CustomSpriteDrawer, Transform, Vec2 } from "kanvas2d"
+import { initGL2, CustomSpriteDrawer, Transform, Vec2, DefaultGlobalData, DefaultSpriteData } from "kanvas2d"
 import * as twgl from "twgl.js"
 import { Color } from "./utils";
 
@@ -18,7 +18,10 @@ let example_texture_2 = await new Promise<WebGLTexture>((resolve, reject) => {
   }, (err, texture) => (err === null) ? resolve(texture) : reject(err));
 });
 
-const wobblySprites = new CustomSpriteDrawer(gl, `#version 300 es
+const wobblySprites = new CustomSpriteDrawer<DefaultSpriteData, DefaultGlobalData & {
+  u_texture: WebGLTexture,
+  u_time: number,
+}>(gl, `#version 300 es
   precision highp float;
   in vec2 v_uv;
   in vec4 v_color;
@@ -51,11 +54,11 @@ function every_frame(cur_timestamp: number) {
     gl.viewport(0, 0, canvas.width, canvas.height);
   }
 
-  wobblySprites.add({transform: new Transform(new Vec2(50, 50), new Vec2(100, 100), Vec2.zero, 0), uvs: Transform.identity});
-  wobblySprites.end({resolution: [canvas.clientWidth, canvas.clientHeight], texture: example_texture_1, time: cur_timestamp * .001});
+  wobblySprites.add({ transform: new Transform(new Vec2(50, 50), new Vec2(100, 100), Vec2.zero, 0), uvs: Transform.identity });
+  wobblySprites.end({ resolution: [canvas.clientWidth, canvas.clientHeight], u_texture: example_texture_1, u_time: cur_timestamp * .001 });
 
-  wobblySprites.add({transform: new Transform(new Vec2(250, 50), new Vec2(100, 100), Vec2.zero, 0), uvs: Transform.identity});
-  wobblySprites.end({resolution: [canvas.clientWidth, canvas.clientHeight], texture: example_texture_2, time: cur_timestamp * .001});
+  wobblySprites.add({ transform: new Transform(new Vec2(250, 50), new Vec2(100, 100), Vec2.zero, 0), uvs: Transform.identity });
+  wobblySprites.end({ resolution: [canvas.clientWidth, canvas.clientHeight], u_texture: example_texture_2, u_time: cur_timestamp * .001 });
 
   // my_sprite_drawer.add({
   //   top_left: new Vec2(50, 50),

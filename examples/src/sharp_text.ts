@@ -1,4 +1,4 @@
-import { initGL2, CustomSpriteDrawer, Transform, Vec2 } from "kanvas2d"
+import { initGL2, CustomSpriteDrawer, Transform, Vec2, DefaultGlobalData, DefaultSpriteData } from "kanvas2d"
 import * as twgl from "twgl.js"
 import { Color } from "./utils";
 import font_metadata from "../fonts/consolas.json"
@@ -15,11 +15,15 @@ let font_atlas = await new Promise<WebGLTexture>((resolve, reject) => {
 
 let font = createFont(font_metadata, font_atlas, '?');
 
-const textDrawer = new CustomSpriteDrawer(gl, `#version 300 es
+const textDrawer = new CustomSpriteDrawer<DefaultSpriteData & { custom_data: {
+  screen_px_range: number,
+}}, DefaultGlobalData & {
+  texture: WebGLTexture,
+}>(gl, `#version 300 es
   precision highp float;
   in vec2 v_uv;
   in vec4 v_color;
-  in vec4 v_extra; // x component used to store the scale
+  in float v_screen_px_range;
   uniform sampler2D u_texture;
 
   out vec4 out_color;
@@ -32,10 +36,10 @@ const textDrawer = new CustomSpriteDrawer(gl, `#version 300 es
   void main() {
     vec3 raw = texture(u_texture, v_uv).rgb;
     float signed_distance = median(raw) - 0.5;
-    float screenPxDistance = v_extra.x * signed_distance;
+    float screenPxDistance = v_screen_px_range * signed_distance;
     float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
     out_color = v_color * alpha;
-  }`);
+  }`, undefined, {screen_px_range: {dimension: 1}});
 
 let last_timestamp = 0;
 function every_frame(cur_timestamp: number) {
@@ -57,13 +61,14 @@ function every_frame(cur_timestamp: number) {
       // transform: new Transform(new Vec2(50, 50), new Vec2(100, 100), Vec2.zero, 0),
       uvs: uvs,
       color: Color.black,
-      extra: [scaling_factor * transform.size.x, 0, 0, 0],
+      custom_data: {
+        screen_px_range: scaling_factor * transform.size.x,
+      }
     });
   });
   textDrawer.end({
     resolution: [canvas.clientWidth, canvas.clientHeight],
     texture: font_atlas,
-    time: cur_timestamp * .001,
   });
 
   // my_sprite_drawer.add({

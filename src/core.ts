@@ -7,7 +7,7 @@ type Attribute = {
     cpu_buffer: Float32Array;
 };
 
-type IVec = number[] | {toArray: () => number[]};
+export type IVec = number[] | {toArray: () => number[]};
 
 /**
  * The base class of the library; everything else is implemented using this class.
