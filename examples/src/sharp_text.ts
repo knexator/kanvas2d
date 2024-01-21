@@ -15,9 +15,9 @@ let font_atlas = await new Promise<WebGLTexture>((resolve, reject) => {
 
 let font = createFont(font_metadata, font_atlas, '?');
 
-const textDrawer = new CustomSpriteDrawer<DefaultSpriteData & { custom_data: {
+const textDrawer = new CustomSpriteDrawer<DefaultSpriteData & {
   screen_px_range: number,
-}}, DefaultGlobalData & {
+}, DefaultGlobalData & {
   texture: WebGLTexture,
 }>(gl, `#version 300 es
   precision highp float;
@@ -39,7 +39,12 @@ const textDrawer = new CustomSpriteDrawer<DefaultSpriteData & { custom_data: {
     float screenPxDistance = v_screen_px_range * signed_distance;
     float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
     out_color = v_color * alpha;
-  }`, undefined, {screen_px_range: {dimension: 1}});
+  }`, undefined, {screen_px_range: {dimension: 1}}, ({screen_px_range, ...default_data}) => ({
+    custom_data: {
+      screen_px_range: screen_px_range,
+    },
+    ...default_data,
+  }));
 
 let last_timestamp = 0;
 function every_frame(cur_timestamp: number) {
@@ -61,9 +66,7 @@ function every_frame(cur_timestamp: number) {
       // transform: new Transform(new Vec2(50, 50), new Vec2(100, 100), Vec2.zero, 0),
       uvs: uvs,
       color: Color.black,
-      custom_data: {
-        screen_px_range: scaling_factor * transform.size.x,
-      }
+      screen_px_range: scaling_factor * transform.size.x,
     });
   });
   textDrawer.end({

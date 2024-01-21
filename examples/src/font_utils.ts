@@ -83,8 +83,6 @@ export function textLine(font: Font, text: string, font_size: number): { quad: R
         scaling_factor: number,
     }[] = [];
 
-    console.log(scaling_factor);
-
     let cur_pos = new Vec2(0, 0);
     let prev_char: string | null = null;
 
