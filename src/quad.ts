@@ -85,7 +85,6 @@ GlobalData extends Record<string, any>,
             return `v_${name} = ${name};`
         }).join('\n')}
         }`;
-        console.log("vert:", vertex_shader);
         super(gl, { ...extra_sprite_data, ...default_attrs },
             vertex_shader, fragment_shader, {
             N_TRIANGLES_PER_SPRITE: 2,

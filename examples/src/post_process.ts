@@ -5,6 +5,50 @@ import { Color, Rectangle } from "./utils";
 const canvas = document.querySelector<HTMLCanvasElement>("canvas")!;
 const gl = initGL2(canvas)!;
 
+// twgl.createFramebufferInfo(gl, )
+
+// pass.render(renderer, inputBuffer, outputBuffer, deltaTime, stencilTest);
+
+// xBuffer = WebGLRenderTarget
+
+
+// // create to render to
+// const targetTextureWidth = 256;
+// const targetTextureHeight = 256;
+// const targetTexture = gl.createTexture()!;
+// gl.bindTexture(gl.TEXTURE_2D, targetTexture);
+
+// {
+//   // define size and format of level 0
+//   const level = 0;
+//   const internalFormat = gl.RGBA;
+//   const border = 0;
+//   const format = gl.RGBA;
+//   const type = gl.UNSIGNED_BYTE;
+//   const data = null;
+//   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+//     targetTextureWidth, targetTextureHeight, border,
+//     format, type, data);
+
+//   // set the filtering so we don't need mips
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+// }
+
+// // Create and bind the framebuffer
+// const fb = gl.createFramebuffer();
+// gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+
+// // attach the texture as the first color attachment
+// const attachmentPoint = gl.COLOR_ATTACHMENT0;
+// gl.framebufferTexture2D(
+//   gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, targetTexture, 0);
+
+let pp_texture = twgl.createTexture(gl, { width: 256, height: 256, minMag: gl.LINEAR });
+let pp_bufferinfo = twgl.createFramebufferInfo(gl, [{ attachment: pp_texture }], 256, 256);
+
+
 let example_texture_1 = await new Promise<WebGLTexture>((resolve, reject) => {
   twgl.createTexture(gl, {
     src: new URL(`../images/example.png`, import.meta.url).href,
@@ -90,10 +134,14 @@ function every_frame(cur_timestamp: number) {
   // let delta_time = (cur_timestamp - last_timestamp) / 1000;
   // last_timestamp = cur_timestamp;
 
+  // gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  // gl.viewport(0, 0, 256, 256);
+  twgl.bindFramebufferInfo(gl, pp_bufferinfo);
+
   // handle resize
-  if (twgl.resizeCanvasToDisplaySize(canvas)) {
-    gl.viewport(0, 0, canvas.width, canvas.height);
-  }
+  // if (twgl.resizeCanvasToDisplaySize(canvas)) {
+  //   gl.viewport(0, 0, canvas.width, canvas.height);
+  // }
 
   my_sprite_drawer.add({
     top_left: new Vec2(50, 50),
@@ -110,6 +158,19 @@ function every_frame(cur_timestamp: number) {
     color: Color.white,
   });
   my_sprite_drawer.end({ time: cur_timestamp * .001, texture: example_texture_2 });
+
+  // gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  // gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
+  twgl.bindFramebufferInfo(gl, null);
+
+  my_sprite_drawer.add({
+    top_left: new Vec2(0, 0),
+    size: new Vec2(500, 500),
+    uvs: Rectangle.unit,
+    color: Color.white,
+  });
+  // my_sprite_drawer.end({ time: cur_timestamp * .001, texture: pp_texture });
+  my_sprite_drawer.end({ time: cur_timestamp * .001, texture: pp_bufferinfo.attachments[0] });
 
   requestAnimationFrame(every_frame);
 }
