@@ -4,6 +4,7 @@ import { Color, Rectangle } from "./utils";
 
 const canvas = document.querySelector<HTMLCanvasElement>("canvas")!;
 const gl = initGL2(canvas)!;
+gl.clearColor(.5, .5, .5, 1);
 
 const asdf = new FullscreenShader(gl, `#version 300 es
 precision mediump float;
@@ -17,8 +18,12 @@ void main() {
   out_color = texture(u_texture, v_uv + vec2(0., sin(v_uv.x * u_resolution.x / 10.) * 10. / u_resolution.y));
 }`);
 
-let pp_texture = twgl.createTexture(gl, { width: canvas.width, height: canvas.height, minMag: gl.LINEAR });
-let pp_bufferinfo = twgl.createFramebufferInfo(gl, [{ attachment: pp_texture }], canvas.width, canvas.height);
+let pp_bufferinfo = twgl.createFramebufferInfo(gl, [{
+  format: gl.RGBA,
+  type: gl.UNSIGNED_BYTE,
+  min: gl.LINEAR,
+  wrap: gl.CLAMP_TO_EDGE
+}], canvas.width, canvas.height);
 
 
 let example_texture_1 = await new Promise<WebGLTexture>((resolve, reject) => {
@@ -111,9 +116,17 @@ function every_frame(cur_timestamp: number) {
   twgl.bindFramebufferInfo(gl, pp_bufferinfo);
 
   // handle resize
-  // if (twgl.resizeCanvasToDisplaySize(canvas)) {
-  //   gl.viewport(0, 0, canvas.width, canvas.height);
-  // }
+  if (twgl.resizeCanvasToDisplaySize(canvas)) {
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    twgl.resizeFramebufferInfo(gl, pp_bufferinfo, [{
+      format: gl.RGBA,
+      type: gl.UNSIGNED_BYTE,
+      min: gl.LINEAR,
+      wrap: gl.CLAMP_TO_EDGE
+    }]);
+  }
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
 
   my_sprite_drawer.add({
     top_left: new Vec2(50, 50),
@@ -134,6 +147,7 @@ function every_frame(cur_timestamp: number) {
   // gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   // gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
   twgl.bindFramebufferInfo(gl, null);
+  gl.clear(gl.COLOR_BUFFER_BIT);
 
   // my_sprite_drawer.add({
   //   top_left: new Vec2(0, 0),
@@ -144,7 +158,7 @@ function every_frame(cur_timestamp: number) {
   // // my_sprite_drawer.end({ time: cur_timestamp * .001, texture: pp_texture });
   // my_sprite_drawer.end({ time: cur_timestamp * .001, texture: pp_bufferinfo.attachments[0] });
 
-  asdf.draw({u_resolution: [canvas.clientWidth, canvas.clientHeight], u_texture: pp_bufferinfo.attachments[0]});
+  asdf.draw({ u_resolution: [canvas.clientWidth, canvas.clientHeight], u_texture: pp_bufferinfo.attachments[0] });
 
   requestAnimationFrame(every_frame);
 }
