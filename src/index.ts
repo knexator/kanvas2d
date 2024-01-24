@@ -5,8 +5,9 @@ import * as m3 from "./m3"
 import { CustomSpriteDrawer, DefaultGlobalData, DefaultSpriteData } from "./quad";
 import { StatefulDrawer } from "./stateful";
 import { CircleDrawer } from "./builtin";
+import { FullscreenShader } from "./fullscreen";
 
-export { GenericDrawer, StatefulDrawer, initGL2, m3, IRect, IVec, IVec2, Vec2, Color, IColor, Transform, CustomSpriteDrawer, DefaultGlobalData, DefaultSpriteData, CircleDrawer };
+export { GenericDrawer, StatefulDrawer, FullscreenShader, initGL2, m3, IRect, IVec, IVec2, Vec2, Color, IColor, Transform, CustomSpriteDrawer, DefaultGlobalData, DefaultSpriteData, CircleDrawer };
 
 function initGL2(canvas: HTMLCanvasElement): WebGL2RenderingContext | null {
     // Assumption 1: transparent canvas is actually faster

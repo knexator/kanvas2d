@@ -203,7 +203,7 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
             gl.bufferSubData(gl.ARRAY_BUFFER, 0, attr.cpu_buffer, 0, this._n_queued * this.N_VERTICES_PER_SPRITE * attr.dimension);
         });
 
-        this.gl.useProgram(this.program_info.program)
+        gl.useProgram(this.program_info.program)
         gl.bindVertexArray(this.vao_info.vertexArrayObject!);
 
         // let canvas = this.gl.canvas as HTMLCanvasElement;
@@ -214,7 +214,7 @@ export class GenericDrawer<SpriteData extends Record<string, any>, GlobalData ex
         // });
         twgl.setUniformsAndBindTextures(this.program_info, this.getGlobalData(global_params));
 
-        twgl.drawBufferInfo(gl, this.vao_info, this.gl.TRIANGLES, this._n_queued * this.N_TRIANGLES_PER_SPRITE * 3);
+        twgl.drawBufferInfo(gl, this.vao_info, gl.TRIANGLES, this._n_queued * this.N_TRIANGLES_PER_SPRITE * 3);
 
         this._n_queued = 0;
     }

@@ -1,52 +1,24 @@
-import { GenericDrawer, initGL2, m3, Vec2 } from "kanvas2d"
+import { FullscreenShader, GenericDrawer, initGL2, m3, Vec2 } from "kanvas2d"
 import * as twgl from "twgl.js"
 import { Color, Rectangle } from "./utils";
 
 const canvas = document.querySelector<HTMLCanvasElement>("canvas")!;
 const gl = initGL2(canvas)!;
 
-// twgl.createFramebufferInfo(gl, )
+const asdf = new FullscreenShader(gl, `#version 300 es
+precision mediump float;
+in vec2 v_uv;
 
-// pass.render(renderer, inputBuffer, outputBuffer, deltaTime, stencilTest);
+uniform sampler2D u_texture;
+uniform vec2 u_resolution;
 
-// xBuffer = WebGLRenderTarget
+out vec4 out_color;
+void main() {
+  out_color = texture(u_texture, v_uv + vec2(0., sin(v_uv.x * u_resolution.x / 10.) * 10. / u_resolution.y));
+}`);
 
-
-// // create to render to
-// const targetTextureWidth = 256;
-// const targetTextureHeight = 256;
-// const targetTexture = gl.createTexture()!;
-// gl.bindTexture(gl.TEXTURE_2D, targetTexture);
-
-// {
-//   // define size and format of level 0
-//   const level = 0;
-//   const internalFormat = gl.RGBA;
-//   const border = 0;
-//   const format = gl.RGBA;
-//   const type = gl.UNSIGNED_BYTE;
-//   const data = null;
-//   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-//     targetTextureWidth, targetTextureHeight, border,
-//     format, type, data);
-
-//   // set the filtering so we don't need mips
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-// }
-
-// // Create and bind the framebuffer
-// const fb = gl.createFramebuffer();
-// gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-
-// // attach the texture as the first color attachment
-// const attachmentPoint = gl.COLOR_ATTACHMENT0;
-// gl.framebufferTexture2D(
-//   gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, targetTexture, 0);
-
-let pp_texture = twgl.createTexture(gl, { width: 256, height: 256, minMag: gl.LINEAR });
-let pp_bufferinfo = twgl.createFramebufferInfo(gl, [{ attachment: pp_texture }], 256, 256);
+let pp_texture = twgl.createTexture(gl, { width: canvas.width, height: canvas.height, minMag: gl.LINEAR });
+let pp_bufferinfo = twgl.createFramebufferInfo(gl, [{ attachment: pp_texture }], canvas.width, canvas.height);
 
 
 let example_texture_1 = await new Promise<WebGLTexture>((resolve, reject) => {
@@ -163,14 +135,16 @@ function every_frame(cur_timestamp: number) {
   // gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
   twgl.bindFramebufferInfo(gl, null);
 
-  my_sprite_drawer.add({
-    top_left: new Vec2(0, 0),
-    size: new Vec2(500, 500),
-    uvs: Rectangle.unit,
-    color: Color.white,
-  });
-  // my_sprite_drawer.end({ time: cur_timestamp * .001, texture: pp_texture });
-  my_sprite_drawer.end({ time: cur_timestamp * .001, texture: pp_bufferinfo.attachments[0] });
+  // my_sprite_drawer.add({
+  //   top_left: new Vec2(0, 0),
+  //   size: new Vec2(500, 500),
+  //   uvs: Rectangle.unit,
+  //   color: Color.white,
+  // });
+  // // my_sprite_drawer.end({ time: cur_timestamp * .001, texture: pp_texture });
+  // my_sprite_drawer.end({ time: cur_timestamp * .001, texture: pp_bufferinfo.attachments[0] });
+
+  asdf.draw({u_resolution: [canvas.clientWidth, canvas.clientHeight], u_texture: pp_bufferinfo.attachments[0]});
 
   requestAnimationFrame(every_frame);
 }
