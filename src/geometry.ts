@@ -16,6 +16,10 @@ export class Vec2 {
         return [this.x, this.y];
     }
 
+    toString(): string {
+        return `Vec2(${this.x},${this.y})`;
+    }
+
     static fromIVec2(v: IVec2): Vec2 {
         if (v instanceof Vec2) {
             return v;
@@ -28,6 +32,10 @@ export class Vec2 {
 
     static both(value: number): Vec2 {
         return new Vec2(value, value);
+    }
+
+    static lerp(a: Vec2, b: Vec2, t: number): Vec2 {
+        return a.scale(1 - t).add(b.scale(t));
     }
 
     add(other: Vec2): Vec2 {
@@ -86,6 +94,18 @@ export class Vec2 {
             this.x * c - this.y * s,
             this.x * s + this.y * c
         );
+    }
+
+    equal(other: Vec2): boolean {
+        return this.x === other.x && this.y === other.y;
+    }
+
+    magSq(): number {
+        return this.x * this.x + this.y * this.y;
+    }
+
+    mag(): number {
+        return Math.sqrt(this.magSq());
     }
 
     static fromRadians(radians: number): Vec2 {
