@@ -119,6 +119,10 @@ export class Vec2 {
     cross(other: Vec2): number {
         return this.x * other.y - this.y * other.x;
     }
+
+    dot(other: Vec2): number {
+        return this.x * other.x + this.y * other.y;
+    }
 }
 
 export class Color {
