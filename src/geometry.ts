@@ -115,6 +115,10 @@ export class Vec2 {
     static fromTurns(turns: number): Vec2 {
         return Vec2.fromRadians(turns * Math.PI * 2);
     }
+
+    cross(other: Vec2): number {
+        return this.x * other.y - this.y * other.x;
+    }
 }
 
 export class Color {
